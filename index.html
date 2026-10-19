@@ -1,0 +1,1147 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="color-scheme" content="light">
+<meta name="theme-color" content="#ffffff">
+<title>RCVR</title>
+<meta name="description" content="RCVR: book a recovery truck on the West London side of the M25 in about a minute, with one fixed all-in price shown before you book.">
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 47 46'%3E%3Crect width='47' height='46' rx='12' fill='%23000'/%3E%3Cg fill='none' stroke='%23fff' stroke-width='3.2' stroke-linecap='round' stroke-linejoin='round'%3E%3Ccircle cx='28' cy='14' r='3.2'/%3E%3Cpath d='M28 17.2V29a6.25 6.25 0 0 1-12.5 0v-4.5'/%3E%3C/g%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Figtree:wght@500&family=Instrument+Sans:wght@400&display=swap">
+<style>
+/* ==========================================================================
+   RCVR: one-page website.
+   A light page in the apps' own look: black, white and grey, with colour
+   only where it means something (999 red). The one dark block is the
+   phone showcase in the hero.
+   ========================================================================== */
+
+/* 3. Design tokens -------------------------------------------------------- */
+:root{
+  color-scheme:light;
+  --design-width:1685px;
+  --design-height:1073px;
+  --panel-bg:#ffffff;
+  --pane-top:#f6f6f6;
+  --pane-bottom:#ebebeb;
+  --card-top:#f7f7f7;
+  --card-bottom:#efefef;
+  --card-line:rgba(0,0,0,.06);
+  --ink:#000000;
+  --text-2:#4b4b4b;
+  --white:#ffffff;
+  --hairline:rgba(0,0,0,.08);
+  --tag-fill:#ffffff;
+  --tag-line:rgba(0,0,0,.1);
+  --tag-ink:rgba(0,0,0,.8);
+  --glass-fill:rgba(255,255,255,.55);
+  --glass-line:rgba(0,0,0,.08);
+  --showcase-bg:#000000;
+  --red-999:#bb032a;
+  --r-panel:33px;
+  --r-pane:26px;
+  --r-phone:36px;
+  --r-cta:14px;
+  --r-pill:10px;
+  --r-keyplate:40px;
+  --r-keyplate-inner:30px;
+  --r-tag:29px;
+  --surface-card:linear-gradient(0deg,var(--card-bottom) 0%,var(--card-top) 100%);
+  --panel-gap:20px;
+  --font-display:'Figtree','Helvetica Neue',Arial,sans-serif;
+  --font-body:'Instrument Sans','Helvetica Neue',Arial,sans-serif;
+}
+
+*,*::before,*::after{box-sizing:border-box}
+html{scroll-behavior:smooth;background:#ffffff}
+body{margin:0;background:var(--panel-bg);color:var(--ink);font-family:var(--font-body);-webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale}
+h1,h2,h3,p{margin:0}
+img{display:block;max-width:100%}
+a{color:inherit;text-decoration:none}
+button{font:inherit;color:inherit}
+:focus-visible{outline:2px solid #000;outline-offset:3px}
+[tabindex="-1"]:focus{outline:none}
+
+/* 4. Document structure --------------------------------------------------- */
+.svg-defs{position:absolute;width:0;height:0;overflow:hidden}
+.viewport,.stage{width:100%}
+.viewport{display:block;overflow-x:clip}
+.panel-slot{position:relative;width:100%;height:100vh;height:100dvh;overflow:clip;scroll-snap-align:start;scroll-snap-stop:always}
+.panel{position:absolute;left:50%;top:50%;width:var(--layout-width,var(--design-width));height:var(--layout-height,var(--design-height));border-radius:var(--r-panel);background:var(--panel-bg);transform:translate(-50%,-50%) scale(var(--scale,1));transform-origin:center}
+
+/* 5. Shared top bar ------------------------------------------------------- */
+.logo{position:absolute;display:block;width:46.92px;height:46px;border-radius:12px}
+.logo svg{display:block;width:100%;height:100%}
+.navlinks{position:absolute;display:flex;align-items:center;gap:8px;height:46px;transform:translateX(var(--pill-x,0px))}
+.pill{display:flex;align-items:center;justify-content:center;height:46px;padding:16px;border-radius:var(--r-pill);background:transparent;color:#000;font-family:var(--font-display);font-weight:500;font-size:16px;line-height:14px;letter-spacing:-.02em;white-space:nowrap;transition:background-color .18s ease}
+.pill:hover{background:rgba(0,0,0,.06)}
+.pill.is-active{background:rgba(0,0,0,.08)}
+.btn-black{position:absolute;display:flex;align-items:center;justify-content:center;width:166px;height:46px;padding:16px;border-radius:var(--r-pill);background:#000;color:#fff;font-family:var(--font-display);font-weight:500;font-size:16px;line-height:14px;letter-spacing:-.02em;white-space:nowrap;transition:background-color .18s ease}
+.btn-black:hover{background:#282828}
+.navmenu{display:contents}
+.navburger{display:none}
+
+/* 6. Section 1: hero ------------------------------------------------------ */
+.hero .logo{left:39px;top:37px}
+.hero .navlinks{left:96.76px;top:37px}
+.hero .btn-black{right:40px;top:37px}
+
+.hero__scene,.lifestyle__scene{position:absolute;inset:0;transform-origin:50% 50%}
+.hero__scene{opacity:var(--scene-opacity,1);transform:translateY(var(--scene-y,0px)) scale(var(--scene-scale,1))}
+.lifestyle__scene{opacity:var(--feature-scene-opacity,1);transform:translateY(var(--feature-scene-y,0px)) scale(var(--feature-scene-scale,1))}
+
+.hero__pane{position:absolute;top:10px;width:calc((100% - 31px)/2);height:calc(100% - 20px);border-radius:var(--r-pane)}
+.hero__pane--left{left:10px;background:linear-gradient(0deg,var(--pane-bottom) 0%,var(--pane-top) 100%)}
+.hero__pane--right{right:10px;overflow:hidden;color:#fff;background:var(--showcase-bg)}
+
+/* The showcase (black pane): a phone with three app screens */
+.showcase__eyebrow{position:absolute;left:34px;top:32.02px;font-family:var(--font-body);font-size:14px;line-height:18px;letter-spacing:-.02em;color:#fff;opacity:.64;white-space:nowrap}
+.showcase__card{position:absolute;left:calc(50% - 107px);top:250px;width:214px;height:449px;aspect-ratio:214/449;border-radius:16.8%/8%;background:linear-gradient(155deg,#2b2b2b 0%,#0c0c0c 34%,#050505 100%);box-shadow:0 0 0 1px rgba(255,255,255,.16),inset 0 0 0 1px rgba(255,255,255,.08),0 48px 90px -30px rgba(0,0,0,.95)}
+.phone__screen{position:absolute;inset:1.56% 3.27%;overflow:hidden;border-radius:14.5%/6.67%;background:#f3f3f3;isolation:isolate}
+.phone__shot{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:top center;opacity:0;visibility:hidden;transition:opacity .6s ease,visibility 0s linear .6s}
+.phone__shot.is-active{opacity:1;visibility:visible;transition:opacity .6s ease,visibility 0s}
+.showcase__copy{display:contents}
+.showcase__slide{position:absolute;inset:0;pointer-events:none;opacity:0;visibility:hidden;transition:opacity .2s ease,visibility 0s linear .2s}
+.showcase__slide.is-active{opacity:1;visibility:visible;transition:opacity .4s ease .22s,visibility 0s linear .22s}
+.showcase__slide.is-active .showcase__title,.showcase__slide.is-active .showcase__sub{pointer-events:auto}
+.showcase__title{position:absolute;left:calc(50% - 154.5px);top:745px;width:286px;height:72px;font-family:var(--font-display);font-weight:500;font-size:40px;line-height:36px;letter-spacing:-.05em;text-transform:uppercase;text-align:center;color:#fff}
+.showcase__sub{position:absolute;left:calc(50% - 171.79px);top:836.05px;width:320px;height:46px;font-family:var(--font-body);font-size:18px;line-height:23px;letter-spacing:-.02em;text-align:center;color:rgba(255,255,255,.74)}
+.dots{position:absolute;left:calc(50% - 18px);bottom:49px;display:flex;align-items:center;gap:9px;height:6px}
+.dot{position:relative;display:block;width:6px;height:6px;padding:0;border:0;border-radius:22px;background:rgba(217,217,217,.42);cursor:pointer;transition:background-color .18s ease}
+.dot.is-active{background:#d9d9d9}
+.dot::after{content:'';position:absolute;left:50%;top:50%;width:20px;height:32px;transform:translate(-50%,-50%)}
+.showcase :focus-visible{outline-color:#fff}
+
+/* Left-pane copy */
+.hero__content{position:absolute;left:0;top:0;width:calc(10px + (100% - 31px)/2);height:100%}
+.hero__title{position:absolute;left:39px;top:279px;transform:translateY(1.8px);width:590px;height:324px;font-family:var(--font-display);font-weight:500;font-size:120px;line-height:108px;letter-spacing:-.05em;text-transform:uppercase}
+.hero__line{display:block}
+.hero__lede{position:absolute;left:39px;top:640.06px;width:384px;height:58px;font-family:var(--font-body);font-size:22px;line-height:29px;letter-spacing:-.02em;color:#000}
+.hero__safety{position:absolute;left:39px;bottom:141px;width:360px;height:40px;font-family:var(--font-body);font-size:15px;line-height:20px;letter-spacing:-.02em;color:var(--text-2)}
+.safety-999{color:var(--red-999)}
+.safety-short{display:none}
+.cta{position:absolute;left:39px;bottom:46px;display:flex;width:244px;height:63px;border-radius:var(--r-cta)}
+.cta__label{display:flex;align-items:center;justify-content:center;width:189px;height:63px;padding:10px 24px;border-radius:var(--r-cta);background:#000;color:#fff;font-family:var(--font-display);font-weight:500;font-size:19px;line-height:19px;letter-spacing:-.02em;white-space:nowrap;transition:background-color .18s ease}
+.cta__arrow{position:absolute;left:181px;top:0;display:flex;align-items:center;justify-content:center;width:63px;height:63px;border-radius:var(--r-cta);background:#000;transition:background-color .18s ease}
+.cta__arrow svg{display:block;width:21.21px;height:21.21px;transform:rotate(90deg)}
+.cta:hover .cta__label,.cta:hover .cta__arrow{background:#282828}
+
+/* 7. Section 2: built for the roadside ------------------------------------ */
+.lifestyle .logo{left:39px;top:37px}
+.lifestyle .navlinks{left:calc(50% - 177.1px);top:37px}
+.lifestyle .btn-black{right:40px;top:37px}
+.lifestyle__title{position:absolute;left:calc(50% - 320px);top:195px;transform:translateY(1.54px);width:640px;height:172px;font-family:var(--font-display);font-weight:500;font-size:96px;line-height:86px;letter-spacing:-.05em;text-transform:uppercase;text-align:center}
+
+.lifestyle__grid,.lcard-slot{display:contents}
+.lcard{position:absolute}
+.lcard__surface{position:absolute;border:1px solid var(--card-line);border-radius:var(--r-pane);background:var(--surface-card)}
+.lcard__title{position:absolute;height:58px;font-family:var(--font-display);font-weight:500;font-size:32px;line-height:29px;letter-spacing:-.05em;text-transform:uppercase;text-align:center}
+.lcard__desc{position:absolute;width:327.19px;height:46px;font-family:var(--font-body);font-size:18px;line-height:23px;letter-spacing:-.02em;text-align:center;color:var(--text-2)}
+.lring{position:absolute;display:block;overflow:visible;pointer-events:none}
+.ltag{position:absolute;display:flex;align-items:center;justify-content:center;height:34px;padding:0 14px;border:1px solid var(--tag-line);border-radius:var(--r-tag);background:var(--tag-fill);color:var(--tag-ink);font-family:var(--font-body);font-size:14px;line-height:18px;letter-spacing:-.02em;white-space:nowrap}
+
+/* Card 1: safety first */
+.lcard--security{left:10px;bottom:9px;width:547px;height:843px}
+.lcard--security .lcard__surface{left:0;top:241px;width:547px;height:602px;background:radial-gradient(368px 368px at 273.5px -26px,rgba(255,255,255,.95) 0%,rgba(255,255,255,0) 100%),var(--surface-card)}
+.lring--security{left:34px;top:0;width:481px;height:481px}
+.ltag--safety{left:209px;top:304px;width:129px}
+.keyplate{position:absolute;left:180px;top:369px;width:189px;height:189px;border:1px solid transparent;border-radius:var(--r-keyplate);background-image:conic-gradient(from 180deg at 50% 50%,#ececec 0deg,#ffffff 133.14deg,#d3d3d3 313.95deg,#ececec 360deg),linear-gradient(180deg,#ffffff 0%,#b9b9b9 100%);background-origin:border-box;background-clip:padding-box,border-box;box-shadow:0 34px 50px -26px rgba(0,0,0,.32),0 2px 6px rgba(0,0,0,.05)}
+.keyplate__well{position:absolute;left:196px;top:386px;width:156px;height:156px;border:9px solid transparent;border-radius:var(--r-keyplate-inner);background-image:radial-gradient(253.7px 263.9px at 8.5px -7.5px,rgba(255,255,255,.95) 24.15%,rgba(255,255,255,0) 100%),linear-gradient(rgba(236,236,236,.77),rgba(236,236,236,.77)),linear-gradient(180deg,rgba(255,255,255,.95) -77.56%,rgba(184,184,184,.9) 165.38%);background-origin:border-box;background-clip:padding-box,padding-box,border-box;box-shadow:inset 0 2px 6px rgba(0,0,0,.07);-webkit-backdrop-filter:blur(59.45px);backdrop-filter:blur(59.45px)}
+.keyplate__glyph{position:absolute;left:237px;top:427px;width:73px;height:73px;color:#111}
+.lcard--security .lcard__title{left:117px;top:652px;width:305px}
+.lcard--security .lcard__desc{left:106px;top:732.05px}
+
+/* Card 2: for recovery operators */
+.lcard--operators{right:10px;bottom:10px;width:548px;height:843px}
+.lcard--operators .lcard__surface{left:0;top:241px;width:548px;height:602px;background:radial-gradient(357.1px 444.3px at 610.5px -78.5px,rgba(255,255,255,.9) 0%,rgba(255,255,255,0) 100%),radial-gradient(278.5px 365.1px at 13.5px -16px,rgba(255,255,255,.9) 0%,rgba(255,255,255,0) 100%),var(--surface-card)}
+.lcard--operators .lcard__surface::after{content:'';position:absolute;inset:0;border-radius:inherit;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 .7 0 0 0 0'/%3E%3C/filter%3E%3Crect width='160' height='160' filter='url(%23n)'/%3E%3C/svg%3E");opacity:.07;pointer-events:none}
+.lring--orbit-outer{left:22px;top:0;width:505px;height:505px}
+.lring--orbit-inner{left:133px;top:118px;width:265px;height:265px}
+.orbit__card{position:absolute;left:121.3px;top:381px;width:300px;height:200px}
+.orbit__badge{position:absolute;left:220px;top:335px;width:103px;height:103px;border:1px solid var(--glass-line);border-radius:50%;background:var(--glass-fill);box-shadow:0 32px 43px -13px rgba(0,0,0,.2);-webkit-backdrop-filter:blur(27.3px);backdrop-filter:blur(27.3px)}
+.orbit__badge-inner{position:absolute;left:230px;top:345px;width:82px;height:82px;border:1px solid var(--glass-line);border-radius:50%;background:var(--glass-fill)}
+.orbit__bolt{position:absolute;left:255px;top:364px;width:38px;height:38.52px;color:#000}
+.ltag--keep{left:227px;top:279px;width:93px}
+.lcard--operators .lcard__title{left:127px;top:653px;width:286px}
+.lcard--operators .lcard__desc{left:106px;top:733.05px}
+
+/* The example job offer, drawn in the operator app's style */
+.offer{display:flex;flex-direction:column;align-items:flex-start;padding:20px;border-radius:22px;background:#fff;box-shadow:0 0 0 1px rgba(0,0,0,.05),0 24px 48px -16px rgba(0,0,0,.18);color:#000;text-align:left}
+.offer__head{font-family:var(--font-display);font-weight:500;font-size:18px;line-height:22px;letter-spacing:-.02em}
+.offer__ring{position:absolute;top:15px;right:18px;width:34px;height:34px}
+.offer__meta{margin-top:22px;font-family:var(--font-body);font-size:15px;line-height:20px;letter-spacing:-.02em;color:var(--text-2);white-space:nowrap}
+.offer__keep{margin-top:4px;font-family:var(--font-display);font-weight:500;font-size:22px;line-height:26px;letter-spacing:-.02em;white-space:nowrap}
+.offer__actions{display:flex;gap:8px;width:100%;margin-top:auto}
+.offer__btn{display:flex;flex:1 1 0;align-items:center;justify-content:center;height:36px;border-radius:999px;background:#f3f3f3;color:#000;font-family:var(--font-display);font-weight:500;font-size:14px;line-height:14px;letter-spacing:-.02em}
+.offer__btn--accept{background:#000;color:#fff}
+.offer-note{position:absolute;left:121.3px;top:593px;width:300px;font-family:var(--font-body);font-size:12px;line-height:16px;letter-spacing:-.01em;color:#5e5e5e;text-align:center;white-space:nowrap}
+
+/* Card 3: live tracking */
+.lcard--transfers{left:calc(50% - 274.5px);bottom:10px;width:549px;height:602px;isolation:isolate}
+.lcard--transfers .lcard__surface{left:0;top:0;width:548px;height:602px;border-color:transparent}
+/* This card's hairline is drawn on top, so the map's fade does not hide it */
+.lcard--transfers::after{content:'';position:absolute;left:0;top:0;width:548px;height:602px;z-index:6;border:1px solid var(--card-line);border-radius:var(--r-pane);pointer-events:none}
+.globe{position:absolute;left:1px;top:98px;width:545px;height:411px;object-fit:cover;object-position:center;mix-blend-mode:multiply;-webkit-mask-image:linear-gradient(90deg,rgba(0,0,0,0) 0%,#000 16%,#000 84%,rgba(0,0,0,0) 100%),linear-gradient(180deg,rgba(0,0,0,0) 0%,#000 24%,#000 75%,rgba(0,0,0,0) 100%);-webkit-mask-composite:source-in;mask-image:linear-gradient(90deg,rgba(0,0,0,0) 0%,#000 16%,#000 84%,rgba(0,0,0,0) 100%),linear-gradient(180deg,rgba(0,0,0,0) 0%,#000 24%,#000 75%,rgba(0,0,0,0) 100%);mask-composite:intersect}
+.globe-fade{position:absolute;left:1px;top:98px;width:548px;height:413px;background:linear-gradient(180deg,rgba(246,246,246,0) 11.26%,#f2f2f2 67.07%,#f1f1f1 100%)}
+.lring--transfers{left:25px;top:81px;width:481px;height:481px}
+.ltag--truck{left:44px;top:123px;width:114px;-webkit-backdrop-filter:blur(17.95px);backdrop-filter:blur(17.95px)}
+.ltag--vehicle{left:375px;top:94px;width:105px;-webkit-backdrop-filter:blur(17.95px);backdrop-filter:blur(17.95px)}
+.transfer-node-path{position:absolute;left:184px;top:89px;width:9px;height:9px;z-index:5;pointer-events:none}
+.node-dot{display:block;width:100%;height:100%;border-radius:50%;background:#000;box-shadow:0 0 0 2px #fff,0 3px 10px rgba(0,0,0,.35)}
+.lcard--transfers .lcard__title{left:174px;top:413px;width:192px}
+.lcard--transfers .lcard__desc{left:106px;top:493.05px}
+.map-credit a{text-decoration:underline;text-underline-offset:2px}
+.map-credit{position:absolute;right:22px;bottom:16px;font-family:var(--font-body);font-size:12px;line-height:16px;letter-spacing:-.01em;color:#5e5e5e;white-space:nowrap}
+
+/* Desktop three-column track */
+@media (min-width:1200px){
+  html{scroll-snap-type:y mandatory}
+  .lifestyle__scene{--feature-card-width:calc((100% - 40px)/3)}
+  .lcard{width:var(--feature-card-width)}
+  .lcard--security{left:10px}
+  .lcard--transfers{left:calc(20px + var(--feature-card-width))}
+  .lcard--operators{right:10px}
+  .lcard > .lcard__surface,.lcard--transfers::after{width:100%}
+  .lcard__content{position:absolute;top:0;height:100%}
+  .lcard--security .lcard__content{left:calc(50% - 273.5px);width:547px}
+  .lcard--transfers .lcard__content{left:calc(50% - 274.5px);width:549px}
+  .lcard--operators .lcard__content{left:calc(50% - 274px);width:548px}
+  .lcard__content > *{max-width:none}
+  /* On the black pane the black button keeps a thin light edge */
+  .hero .btn-black{box-shadow:inset 0 0 0 1px rgba(255,255,255,.28)}
+  .hero .btn-black:focus-visible{outline-color:#fff}
+}
+
+/* 8. Animations ----------------------------------------------------------- */
+@keyframes hero-line-enter{from{opacity:0;filter:blur(16px)}to{opacity:1;filter:blur(0)}}
+@keyframes hero-detail-enter{from{opacity:0;filter:blur(10px);transform:translateY(8px)}to{opacity:1;filter:blur(0);transform:translateY(0)}}
+@keyframes hero-cta-enter{from{opacity:0;filter:blur(6px);transform:scale(.96)}to{opacity:1;filter:blur(0);transform:scale(1)}}
+/* The phone only arrives (no spin: a turning screen would show mirrored text) */
+@keyframes hero-phone-enter{0%{opacity:0;filter:blur(10px);transform:scale(.48)}15%{opacity:1;filter:blur(0);transform:scale(1)}100%{opacity:1;filter:blur(0);transform:scale(1)}}
+@keyframes hero-phone-float{from{translate:0 0}to{translate:0 -6px}}
+
+@media (min-width:1200px) and (prefers-reduced-motion:no-preference){
+  .hero__line{animation:hero-line-enter 420ms cubic-bezier(.22,1,.36,1) both}
+  .hero__line:nth-child(1){animation-delay:360ms}
+  .hero__line:nth-child(2){animation-delay:460ms}
+  .hero__line:nth-child(3){animation-delay:560ms}
+  .hero__lede{animation:hero-detail-enter 380ms 780ms cubic-bezier(.22,1,.36,1) both}
+  .hero__safety{animation:hero-detail-enter 380ms 830ms cubic-bezier(.22,1,.36,1) both}
+  .cta{animation:hero-cta-enter 340ms 880ms cubic-bezier(.22,1,.36,1) both;transform-origin:left center}
+  .showcase__card{transform-origin:center;animation:hero-phone-enter 4300ms 350ms linear both,hero-phone-float 6s 4650ms ease-in-out infinite alternate;will-change:transform,opacity,filter}
+  .showcase__title{animation:hero-detail-enter 380ms 820ms cubic-bezier(.22,1,.36,1) both}
+  .showcase__sub{animation:hero-detail-enter 380ms 930ms cubic-bezier(.22,1,.36,1) both}
+  .dots{animation:hero-detail-enter 300ms 1040ms cubic-bezier(.22,1,.36,1) both}
+}
+
+/* B) The travelling node on card 3: from the nearest truck to your vehicle */
+@keyframes transfer-node-motion{0%,15%{offset-distance:0%}80%,99.99%{offset-distance:100%}100%{offset-distance:0%}}
+@keyframes transfer-node-visibility{0%,8%{opacity:0;transform:scale(.82)}15%,80%{opacity:1;transform:scale(1)}87%,100%{opacity:0;transform:scale(.82)}}
+.has-transfer-loop .transfer-node-path{left:0;top:0;offset-path:path('M 61 198 A 240.5 240.5 0 0 1 451 166');offset-rotate:0deg;offset-anchor:center;animation:transfer-node-motion 5042ms linear infinite both;will-change:offset-distance}
+.has-transfer-loop .node-dot{animation:transfer-node-visibility 5042ms linear infinite both;will-change:opacity,transform}
+
+/* C) Section-2 entrance: each group reads a 0 to 1 value set by the script */
+.lifestyle__title{opacity:var(--title-opacity,1);filter:blur(calc((1 - var(--title-opacity,1))*14px))}
+.lcard--security .lcard__surface,.lcard--security .lcard__title,.lcard--security .lcard__desc{opacity:var(--security-base,1);filter:blur(calc((1 - var(--security-base,1))*10px))}
+.lring--security,.keyplate,.keyplate__well,.ltag--safety{opacity:var(--security-art,1);filter:blur(calc((1 - var(--security-art,1))*9px))}
+.keyplate__glyph{opacity:var(--security-art,1);filter:drop-shadow(0 1px 0 rgba(255,255,255,.9)) blur(calc((1 - var(--security-art,1))*9px))}
+.keyplate,.keyplate__well,.keyplate__glyph{scale:calc(.84 + var(--security-art,1)*.16)}
+.lcard--transfers .lcard__surface,.lcard--transfers::after,.lcard--transfers .lcard__title,.lcard--transfers .lcard__desc,.map-credit{opacity:var(--transfer-base,1);filter:blur(calc((1 - var(--transfer-base,1))*10px))}
+.globe{opacity:var(--transfer-art,1);filter:grayscale(1) contrast(1.08) blur(calc((1 - var(--transfer-art,1))*9px))}
+.globe-fade,.lring--transfers,.ltag--truck,.ltag--vehicle,.transfer-node-path{opacity:var(--transfer-art,1);filter:blur(calc((1 - var(--transfer-art,1))*9px))}
+.lcard--operators .lcard__surface,.lcard--operators .lcard__title,.lcard--operators .lcard__desc{opacity:var(--operators-base,1);filter:blur(calc((1 - var(--operators-base,1))*10px))}
+.lring--orbit-outer,.lring--orbit-inner{opacity:var(--operators-rings,1)}
+.orbit__card,.offer-note{opacity:var(--operators-card,1);filter:blur(calc((1 - var(--operators-card,1))*11px));scale:calc(.9 + var(--operators-card,1)*.1)}
+.orbit__badge,.orbit__badge-inner,.orbit__bolt{opacity:var(--operators-badge,1);filter:blur(calc((1 - var(--operators-badge,1))*8px));scale:calc(.75 + var(--operators-badge,1)*.25)}
+.ltag--keep{opacity:var(--operators-tag,1);filter:blur(calc((1 - var(--operators-tag,1))*7px));scale:calc(.9 + var(--operators-tag,1)*.1)}
+.is-transitioning .hero__scene,.is-transitioning .lifestyle__scene{will-change:transform,opacity}
+
+/* 10. Responsive ---------------------------------------------------------- */
+
+/* Below 1200px: a normal scrolling page (reflow foundation) */
+@media (max-width:1199.98px){
+  .viewport{display:block;height:auto!important;overflow:visible;overflow-x:clip}
+  .panel-slot{display:block;height:auto;overflow:visible;scroll-snap-align:none}
+  .panel{position:relative;left:auto;top:auto;width:100%;height:auto;border-radius:24px;padding:20px 20px 32px;overflow:hidden;transform:none}
+  .panel-slot + .panel-slot{margin-top:var(--panel-gap)}
+  .logo,.navlinks,.btn-black{position:static}
+  .hero{display:flex;flex-direction:column}
+  .hero__pane--left{display:none}
+  .hero__content{order:2}
+  .hero__pane--right{order:3}
+  .hero__title,.hero__lede,.hero__safety,.cta{position:relative;left:auto;top:auto;bottom:auto;right:auto;transform:none}
+  .hero__title,.hero__lede,.hero__safety{width:auto;height:auto}
+  .hero__title{font-size:clamp(48px,14vw,96px);line-height:.9}
+  .hero__lede{max-width:24em;margin-top:clamp(20px,2.8vw,32px);text-wrap:balance}
+  .hero__safety{max-width:30em;margin-top:clamp(14px,2vw,20px);text-wrap:balance}
+  /* In a narrow column the safety line uses a shorter wording, so it stays at two lines */
+  .hero__content{container-type:inline-size}
+  @container (max-width:339.98px){
+    .hero__safety{font-size:14px}
+    .safety-long{display:none}
+    .safety-short{display:inline}
+  }
+  .cta{margin-top:clamp(22px,3.2vw,32px);flex:none}
+  /* Hard line breaks are for the desktop artboard; smaller screens wrap naturally */
+  .hero__lede br,.hero__safety br,.showcase__sub br{display:none}
+  .showcase__copy{display:block}
+  .hero__scene,.lifestyle__scene{display:contents}
+  .lifestyle__title{position:static;left:auto;top:auto;transform:none;width:auto;height:auto;font-size:clamp(56px,9vw,96px);line-height:.896;margin:0 0 clamp(28px,4vw,48px)}
+  .lifestyle__grid{display:flex;flex-direction:column;align-items:center;gap:20px;width:100%}
+  .lcard-slot{display:block;position:relative;width:100%;max-width:549px;overflow:hidden;aspect-ratio:548/602}
+  .lcard{left:0;top:0;right:auto;bottom:auto;transform:translateY(var(--crop-shift,0px)) scale(var(--card-scale,1));transform-origin:top left}
+  .lcard--security,.lcard--operators{--crop-top:241}
+}
+
+/* Below 1200px: compact architecture (one fixed bar, burger menu) */
+@media (max-width:1199.98px){
+  :root{--pad:clamp(24px,3.2vw,40px);--tgap:clamp(18px,2.4vw,30px);--bar-h:calc(46px + var(--pad)*2)}
+  .panel{display:flex;flex-direction:column;padding:calc(var(--bar-h) + var(--tgap)) var(--pad) calc(var(--pad) + 6px);border-radius:clamp(26px,2.6vw,33px)}
+  .lifestyle .topbar{display:none}
+  .hero .topbar{position:fixed;inset:0 0 auto;z-index:100;display:flex;align-items:center;justify-content:space-between;padding:var(--pad);background:rgba(255,255,255,.82);border-bottom:1px solid var(--hairline);-webkit-backdrop-filter:blur(18px);backdrop-filter:blur(18px)}
+  .panel,#tracking,#operators{scroll-margin-top:calc(var(--bar-h) + var(--tgap))}
+  .navburger{display:flex;align-items:center;justify-content:center;width:46px;height:46px;padding:0;border:0;border-radius:var(--r-pill);background:transparent;cursor:pointer;transition:background-color .18s ease}
+  .navburger:hover,.navburger[aria-expanded="true"]{background:rgba(0,0,0,.06)}
+  .navburger__bars,.navburger__bars::before,.navburger__bars::after{display:block;width:18px;height:1.5px;border-radius:1px;background:#000}
+  .navburger__bars{position:relative;transition:background-color .22s ease}
+  .navburger__bars::before,.navburger__bars::after{content:'';position:absolute;left:0;transition:transform .22s ease}
+  .navburger__bars::before{top:-5.5px}
+  .navburger__bars::after{top:5.5px}
+  .navburger[aria-expanded="true"] .navburger__bars{background:transparent}
+  .navburger[aria-expanded="true"] .navburger__bars::before{transform:translateY(5.5px) rotate(45deg)}
+  .navburger[aria-expanded="true"] .navburger__bars::after{transform:translateY(-5.5px) rotate(-45deg)}
+  .navmenu{display:block;position:absolute;right:var(--pad);top:calc(100% + 14px);z-index:30;width:min(300px,calc(100% - var(--pad)*2));padding:14px;border:1px solid var(--hairline);border-radius:var(--r-pane);background:#ffffff;box-shadow:0 24px 48px -16px rgba(0,0,0,.18);opacity:0;visibility:hidden;pointer-events:none;transform:translateY(-8px) scale(.98);transform-origin:100% 0;transition:opacity .22s ease,transform .22s ease,visibility 0s linear .22s}
+  .navmenu.is-open{opacity:1;visibility:visible;pointer-events:auto;transform:none;transition:opacity .22s ease,transform .22s ease,visibility 0s}
+  .navmenu .navlinks{flex-direction:column;align-items:stretch;gap:6px;height:auto;transform:none}
+  .navmenu .pill{justify-content:flex-start}
+  .navmenu .btn-black{width:100%;height:46px;margin-top:10px}
+
+  .hero__scene{position:relative;inset:auto;display:grid;grid-template-columns:minmax(0,1fr);gap:var(--tgap);opacity:1;transform:none}
+  .hero__pane{position:relative;top:auto;left:auto;right:auto;width:auto;height:auto}
+  .hero__pane--left{display:block;grid-area:1/1}
+  .hero__content{position:relative;left:auto;top:auto;width:auto;height:auto;grid-area:1/1;z-index:1;display:flex;flex-direction:column;align-items:flex-start;padding:clamp(28px,4.2vw,56px)}
+  /* A phone is taller than the old card, so the pane is sized by the phone (not 5:4) */
+  .hero__pane--right{grid-area:2/1;width:100%;display:grid;grid-template-columns:minmax(0,1fr);grid-template-rows:auto auto auto auto;align-content:center;justify-items:center;min-height:380px;aspect-ratio:auto;max-height:none;padding:clamp(20px,3.4%,34px);row-gap:clamp(14px,2.4%,24px)}
+  .showcase__eyebrow,.showcase__card,.dots{position:relative;left:auto;top:auto;bottom:auto}
+  .showcase__card{width:auto;height:clamp(440px,54vw,500px);max-width:100%;max-height:none;min-height:0}
+  .showcase__copy{display:grid;grid-template-columns:minmax(0,1fr);justify-items:center;width:100%}
+  .showcase__slide{position:relative;inset:auto;grid-area:1/1;display:flex;flex-direction:column;align-items:center;gap:12px;width:100%}
+  .showcase__title,.showcase__sub{position:static;width:auto;height:auto;max-width:100%}
+  .showcase__eyebrow{max-width:100%;white-space:normal;text-align:center}
+  .showcase__sub{width:320px;text-wrap:balance}
+  .lifestyle__grid{display:grid;grid-template-columns:minmax(0,1fr);justify-items:center;align-items:start;gap:var(--tgap)}
+}
+
+/* Landscape tablets keep the hero's side-by-side split */
+@media (min-width:600px) and (max-width:1199.98px) and (min-aspect-ratio:1/1){
+  .hero__scene{--hero-h:clamp(430px,calc(100dvh - var(--bar-h) - var(--tgap) - var(--pad) - 6px),720px);grid-template-columns:minmax(0,1fr) minmax(0,.9fr);min-height:var(--hero-h)}
+  .hero__pane--right{grid-area:1/2;height:auto;min-height:var(--hero-h);align-self:stretch;aspect-ratio:auto;max-height:none;grid-template-rows:auto minmax(0,1fr) auto auto;align-content:normal}
+  .showcase__card{height:100%;max-height:none;min-height:340px}
+  .hero__title{font-size:clamp(40px,7.6vw,92px)}
+  .hero__lede{margin-top:auto;padding-top:clamp(20px,2.8vw,32px)}
+}
+
+@media (min-width:940px) and (max-width:1199.98px){
+  .lifestyle__grid{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .lcard-slot:last-child{grid-column:1/-1;width:calc((100% - var(--tgap))/2)}
+}
+
+/* Phones */
+@media (max-width:599.98px){
+  :root{--pad:clamp(16px,5vw,24px);--tgap:clamp(14px,4vw,22px)}
+  .navmenu{left:var(--pad);right:var(--pad);width:auto}
+  .hero__content{padding:clamp(22px,6vw,34px)}
+  .hero__title{font-size:clamp(40px,13vw,72px)}
+  .hero__lede{font-size:clamp(16px,4.4vw,19px);line-height:1.32;margin-bottom:0}
+  .hero__safety{font-size:14px;line-height:20px}
+  .hero__pane--right{min-height:62dvh}
+  .showcase__card{height:clamp(300px,84vw,440px)}
+  .lifestyle__title{font-size:clamp(40px,12vw,72px)}
+
+  /* The feature cards stop being scaled and are rebuilt at native type size */
+  .lcard-slot{max-width:none;aspect-ratio:auto}
+  .lcard{position:relative;width:100%;height:auto;transform:none}
+  .lcard .lcard__surface,.lcard--transfers::after{left:0;top:0;right:0;bottom:0;width:auto;height:auto}
+  .lcard .lcard__content{position:relative;display:flex;flex-direction:column;align-items:center;padding:var(--art-h) clamp(16px,5vw,26px) var(--art-foot)}
+  .lcard .lcard__title,.lcard .lcard__desc{position:static;width:auto;height:auto;max-width:100%;text-wrap:balance}
+  .lcard .lcard__desc{margin-top:22px}
+  .lcard__desc br{display:none}
+  .lcard .lring{left:50%;height:auto;aspect-ratio:1;transform:translate(-50%,-50%)}
+  .lcard .ltag,.lcard .keyplate,.lcard .keyplate__well,.lcard .keyplate__glyph,.lcard .orbit__card,.lcard .orbit__badge,.lcard .orbit__badge-inner,.lcard .orbit__bolt{left:50%;transform:translateX(-50%)}
+
+  .lcard--security{--art-h:calc(317px + 17.2%);--art-foot:max(40px,11.8%)}
+  .lcard--security .lring--security{top:0;width:88%}
+  .lcard .ltag--safety{top:63px}
+  .lcard .keyplate{top:128px}
+  .lcard .keyplate__well{top:145px}
+  .lcard .keyplate__glyph{top:186px}
+
+  .lcard--operators{--art-h:min(412px,calc(148px + 76.3%));--art-foot:max(40px,11.8%)}
+  .lcard--operators .lring--orbit-outer{top:11.5px;width:92.2%}
+  .lcard--operators .lring--orbit-inner{left:48.4%;top:9.5px;width:48.4%}
+  .lcard .ltag--keep{top:38px}
+  .lcard .orbit__card{top:140px;width:min(300px,calc(100% - 2*clamp(16px,5vw,26px)))}
+  .lcard .orbit__badge{top:94px}
+  .lcard .orbit__badge-inner{top:104px}
+  .lcard .orbit__bolt{top:123px}
+  .lcard .offer-note{left:50%;top:352px;width:auto;transform:translateX(-50%)}
+
+  .lcard--transfers{--art-h:calc(98px + 57.8%);--art-foot:max(40px,11.8%)}
+  .lcard .globe,.lcard .globe-fade{left:0;right:0;top:98px;width:100%;height:auto}
+  .lcard .globe{aspect-ratio:545/411}
+  /* The fade is a little taller than the map, so no edge of the map shows */
+  .lcard .globe-fade{box-sizing:content-box;aspect-ratio:545/411;padding-bottom:2px}
+  .lcard .lring--transfers{top:98px;margin-top:40.7%;width:87.6%}
+  .lcard .ltag--truck{left:8%;top:123px;transform:none}
+  .lcard .ltag--vehicle{left:auto;right:12.6%;top:94px;transform:none}
+  .lcard .transfer-node-path{left:33.5%;top:89px;offset-path:none;animation:none}
+  .lcard .node-dot{animation:none}
+  .lcard .map-credit{right:clamp(16px,5vw,26px);bottom:14px}
+}
+
+/* Narrow phones: the offer card's text starts below the badge */
+@media (max-width:399.98px){
+  .lcard--operators{--art-h:424px}
+  .lcard .offer-note{top:390px}
+  .lcard .orbit__card{height:auto;padding-top:66px}
+  .lcard .offer__actions{margin-top:22px}
+}
+
+/* D) Reduced motion: everything visible, nothing moves */
+@media (prefers-reduced-motion:reduce){
+  /* No scripted transition here, so the page scrolls freely instead of snapping */
+  html{scroll-behavior:auto;scroll-snap-type:none}
+  *,*::before,*::after{transition:none!important;animation:none!important}
+  .hero__scene,.lifestyle__scene{opacity:1!important;transform:none!important}
+  .navlinks{transform:none!important}
+}
+</style>
+</head>
+<body>
+
+<svg class="svg-defs" aria-hidden="true" width="0" height="0" focusable="false">
+  <defs>
+    <linearGradient id="ringDown" x1="0" y1="0" x2="0" y2="1">
+      <stop offset=".5436" stop-color="#000" stop-opacity="0"/>
+      <stop offset="1" stop-color="#000" stop-opacity=".16"/>
+    </linearGradient>
+    <linearGradient id="ringUp" x1="0" y1="1" x2="0" y2="0">
+      <stop offset=".5436" stop-color="#000" stop-opacity="0"/>
+      <stop offset="1" stop-color="#000" stop-opacity=".16"/>
+    </linearGradient>
+  </defs>
+</svg>
+
+<main class="viewport" id="viewport">
+  <div class="stage" id="stage">
+
+    <!-- Section 1: hero -->
+    <div class="panel-slot">
+      <section class="panel hero" id="top" tabindex="-1" aria-labelledby="hero-title">
+        <div class="hero__scene">
+          <div class="hero__pane hero__pane--left" aria-hidden="true"></div>
+
+          <div class="hero__content">
+            <h1 class="hero__title" id="hero-title"><span class="hero__line">Recovery</span> <span class="hero__line">On</span> <span class="hero__line">Demand</span></h1>
+            <p class="hero__lede">Book a recovery truck in about a minute <br>on the West London side of the M25.</p>
+            <p class="hero__safety"><span class="safety-long">This is recovery booking, not an emergency service. <br>In a live traffic lane, or if anyone is hurt, <span class="safety-999">call 999</span>.</span><span class="safety-short">Recovery booking, not an emergency service. Live lane or anyone hurt? <span class="safety-999">Call 999</span>.</span></p>
+            <a class="cta" href="#features">
+              <span class="cta__label">See how it works</span>
+              <span class="cta__arrow" aria-hidden="true">
+                <svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" focusable="false"><path d="M12 19.5V4.5"/><path d="M5.5 11 12 4.5 18.5 11"/></svg>
+              </span>
+            </a>
+          </div>
+
+          <div class="hero__pane hero__pane--right showcase" id="tracking" tabindex="-1">
+            <p class="showcase__eyebrow">RCVR is coming soon to iPhone and Android</p>
+
+            <div class="showcase__card phone">
+              <div class="phone__screen">
+                <img class="phone__shot is-active" src="assets/hero-1-location.jpg" width="600" height="1304" decoding="async" fetchpriority="high" alt="The customer app’s first screen: a map with a pin where you are and the question “Is your vehicle here?”">
+                <img class="phone__shot" src="assets/hero-2-price.jpg" width="600" height="1304" decoding="async" alt="The customer app’s price screen, from the test version: one total price, all in, shown before you book, with a note that it only changes if you approve it on your phone. It is labelled Demo payment, and the amounts are blurred here.">
+                <img class="phone__shot" src="assets/hero-3-tracking.jpg" width="600" height="1304" decoding="async" alt="The customer app’s tracking screen, from the test version: the truck on a map, how many minutes away it is, the driver’s name and the truck’s number plate. It is labelled Demo, with a simulated truck and driver.">
+              </div>
+            </div>
+
+            <div class="showcase__copy">
+              <div class="showcase__slide is-active">
+                <h2 class="showcase__title">Pinned<br>for you</h2>
+                <p class="showcase__sub">Your phone finds where you are. <br>Then a few quick questions.</p>
+              </div>
+              <div class="showcase__slide">
+                <h2 class="showcase__title">One price,<br>all in</h2>
+                <p class="showcase__sub">Shown before you book. Nothing added <br>unless you approve it on your phone.</p>
+              </div>
+              <div class="showcase__slide">
+                <h2 class="showcase__title">Your truck,<br>on its way</h2>
+                <p class="showcase__sub">See the driver’s name, the truck’s <br>number plate and the arrival time.</p>
+              </div>
+            </div>
+
+            <div class="dots" role="group" aria-label="App screens">
+              <button class="dot is-active" type="button" aria-pressed="true" aria-label="Show screen 1 of 3: finding you"></button>
+              <button class="dot" type="button" aria-pressed="false" aria-label="Show screen 2 of 3: the price"></button>
+              <button class="dot" type="button" aria-pressed="false" aria-label="Show screen 3 of 3: the truck on its way"></button>
+            </div>
+          </div>
+        </div>
+
+        <header class="topbar">
+          <a class="logo" href="#top">
+            <svg viewBox="0 0 47 46" role="img" aria-label="RCVR" focusable="false"><rect width="47" height="46" rx="12" fill="#000"/><text x="23.5" y="27.6" text-anchor="middle" fill="#fff" font-family="Figtree, 'Helvetica Neue', Arial, sans-serif" font-weight="500" font-size="13.5" letter-spacing="-0.4">RCVR</text></svg>
+          </a>
+          <button class="navburger" type="button" aria-expanded="false" aria-controls="nav-menu-hero" aria-label="Open menu"><span class="navburger__bars"></span></button>
+          <div class="navmenu" id="nav-menu-hero">
+            <nav class="navlinks" aria-label="Primary">
+              <a class="pill" href="#features">How it works</a>
+              <a class="pill" href="#tracking">Tracking</a>
+              <a class="pill" href="#operators">For operators</a>
+            </nav>
+            <a class="btn-black" href="#operators">Join as an operator</a>
+          </div>
+        </header>
+      </section>
+    </div>
+
+    <!-- Section 2: built for the roadside -->
+    <div class="panel-slot">
+      <section class="panel lifestyle" id="features" tabindex="-1" aria-labelledby="features-title">
+        <div class="lifestyle__scene">
+          <h2 class="lifestyle__title" id="features-title">Built for<br>the roadside</h2>
+
+          <div class="lifestyle__grid">
+
+            <!-- Card 1 (left): safety first -->
+            <div class="lcard-slot">
+              <article class="lcard lcard--security" aria-labelledby="card-safety-title">
+                <div class="lcard__surface"></div>
+                <div class="lcard__content">
+                  <svg class="lring lring--security" viewBox="0 0 481 481" aria-hidden="true" focusable="false"><circle cx="240.5" cy="240.5" r="240" fill="none" stroke="url(#ringDown)" stroke-width="1"/></svg>
+                  <div class="keyplate" aria-hidden="true"></div>
+                  <h3 class="lcard__title" id="card-safety-title">Safety<br>first</h3>
+                  <p class="lcard__desc">In a live lane the app stops the booking <br>and tells you to call 999.</p>
+                  <div class="keyplate__well" aria-hidden="true"></div>
+                  <svg class="keyplate__glyph" viewBox="0 0 73 73" aria-hidden="true" focusable="false"><path d="M36.5 13.5 62.5 59H10.5Z" fill="none" stroke="currentColor" stroke-width="5.2" stroke-linejoin="round"/><path d="M36.5 30v13" stroke="currentColor" stroke-width="5.2" stroke-linecap="round"/><circle cx="36.5" cy="51" r="3.1" fill="currentColor"/></svg>
+                  <span class="ltag ltag--safety">Never a live lane</span>
+                </div>
+              </article>
+            </div>
+
+            <!-- Card 3 (centre): live tracking -->
+            <div class="lcard-slot">
+              <article class="lcard lcard--transfers" aria-labelledby="card-tracking-title">
+                <div class="lcard__surface"></div>
+                <div class="lcard__content">
+                  <img class="globe" src="assets/map-london.jpg" width="1090" height="822" alt="" decoding="async">
+                  <div class="globe-fade" aria-hidden="true"></div>
+                  <svg class="lring lring--transfers" viewBox="0 0 481 481" aria-hidden="true" focusable="false"><circle cx="240.5" cy="240.5" r="240" fill="none" stroke="url(#ringUp)" stroke-width="1"/></svg>
+                  <h3 class="lcard__title" id="card-tracking-title">Live<br>tracking</h3>
+                  <p class="lcard__desc">Watch the truck come to you. Your card <br>is held, then charged on delivery.</p>
+                  <span class="ltag ltag--truck" aria-hidden="true">Nearest truck</span>
+                  <span class="ltag ltag--vehicle" aria-hidden="true">Your vehicle</span>
+                  <span class="transfer-node-path" aria-hidden="true"><span class="node-dot"></span></span>
+                  <p class="map-credit">Map © <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors</p>
+                </div>
+              </article>
+            </div>
+
+            <!-- Card 2 (right): for recovery operators -->
+            <div class="lcard-slot">
+              <article class="lcard lcard--operators" id="operators" tabindex="-1" aria-labelledby="card-operators-title">
+                <div class="lcard__surface"></div>
+                <div class="lcard__content">
+                  <h3 class="lcard__title" id="card-operators-title">For recovery<br>operators</h3>
+                  <p class="lcard__desc">Free to join, no penalty for declining, <br>and paid to your bank automatically.</p>
+                  <svg class="lring lring--orbit-outer" viewBox="0 0 505 505" aria-hidden="true" focusable="false"><circle cx="252.5" cy="252.5" r="252" fill="none" stroke="url(#ringDown)" stroke-width="1"/></svg>
+                  <svg class="lring lring--orbit-inner" viewBox="0 0 265 265" aria-hidden="true" focusable="false"><circle cx="132.5" cy="132.5" r="132" fill="none" stroke="url(#ringDown)" stroke-width="1"/></svg>
+                  <div class="orbit__card offer" role="img" aria-label="Example job offer in the operator app: new job, about 6 minutes and 2.4 miles away, you keep 80%, with Accept and Decline.">
+                    <span class="offer__head">New job</span>
+                    <svg class="offer__ring" viewBox="0 0 36 36" aria-hidden="true" focusable="false"><circle cx="18" cy="18" r="15" fill="none" stroke="#e8e8e8" stroke-width="3.2"/><circle cx="18" cy="18" r="15" fill="none" stroke="#000" stroke-width="3.2" stroke-linecap="round" pathLength="100" stroke-dasharray="70 100" transform="rotate(-90 18 18)"/></svg>
+                    <span class="offer__meta">About 6 min · 2.4 miles</span>
+                    <span class="offer__keep">You keep 80%</span>
+                    <span class="offer__actions"><span class="offer__btn">Decline</span><span class="offer__btn offer__btn--accept">Accept</span></span>
+                  </div>
+                  <p class="offer-note" aria-hidden="true">Example job offer</p>
+                  <div class="orbit__badge" aria-hidden="true"></div>
+                  <div class="orbit__badge-inner" aria-hidden="true"></div>
+                  <svg class="orbit__bolt" viewBox="0 0 38 38.52" aria-hidden="true" focusable="false"><path d="M22.4 3.2 8.6 21.6h9.6l-2.6 13.7 13.8-19.1h-9.6l2.6-13Z" fill="currentColor" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/></svg>
+                  <span class="ltag ltag--keep">Keep 80%</span>
+                </div>
+              </article>
+            </div>
+
+          </div>
+        </div>
+
+        <header class="topbar">
+          <a class="logo" href="#top">
+            <svg viewBox="0 0 47 46" role="img" aria-label="RCVR" focusable="false"><rect width="47" height="46" rx="12" fill="#000"/><text x="23.5" y="27.6" text-anchor="middle" fill="#fff" font-family="Figtree, 'Helvetica Neue', Arial, sans-serif" font-weight="500" font-size="13.5" letter-spacing="-0.4">RCVR</text></svg>
+          </a>
+          <button class="navburger" type="button" aria-expanded="false" aria-controls="nav-menu-lifestyle" aria-label="Open menu"><span class="navburger__bars"></span></button>
+          <div class="navmenu" id="nav-menu-lifestyle">
+            <nav class="navlinks" aria-label="Sections">
+              <a class="pill" href="#features">How it works</a>
+              <a class="pill" href="#tracking">Tracking</a>
+              <a class="pill" href="#operators">For operators</a>
+            </nav>
+            <a class="btn-black" href="#operators">Join as an operator</a>
+          </div>
+        </header>
+      </section>
+    </div>
+
+  </div>
+</main>
+
+<script>
+(function () {
+  'use strict';
+
+  /* Constants (from the spec) */
+  var DESIGN_WIDTH = 1685;
+  var DESIGN_HEIGHT = 1073;
+  var DESKTOP_QUERY = '(min-width:1200px)';
+  var COMPACT_QUERY = '(min-width:600px) and (max-width:1199.98px)';
+  var REDUCED_QUERY = '(prefers-reduced-motion: reduce)';
+
+  var EXIT_MS = 800;
+  var PILL_MS = 733;
+  var PILL_DELAY = 17;
+  var TITLE_AT = 750;
+  var TITLE_MS = 583;
+  var TOTAL_MS = 3400;
+  var EXIT_TRAVEL = -3150;
+  var EXIT_EXP = 9.1;
+  var EXIT_SCALE = 0.039;
+  var EXIT_SCALE_EXP = 0.62;
+  var HERO_PILL_X = 96.76;
+  var PILL_HALF = 177.1;
+  var BACK_MS = 1600;
+  var GLOBE_AT = 1880;
+  var SLIDE_MS = 4500;
+
+  var desktopMQ = window.matchMedia(DESKTOP_QUERY);
+  var compactMQ = window.matchMedia(COMPACT_QUERY);
+  var reducedMQ = window.matchMedia(REDUCED_QUERY);
+
+  var root = document.documentElement;
+  var body = document.body;
+  var stage = document.getElementById('stage');
+  var slots = toArray(document.querySelectorAll('.panel-slot'));
+  var heroPanel = document.querySelector('.hero');
+  var featurePanel = document.querySelector('.lifestyle');
+  var heroNav = heroPanel.querySelector('.navlinks');
+  var featureScene = featurePanel.querySelector('.lifestyle__scene');
+  var cardSlots = toArray(document.querySelectorAll('.lcard-slot'));
+
+  function toArray(list) { return Array.prototype.slice.call(list); }
+  function clamp01(v) { return v < 0 ? 0 : v > 1 ? 1 : v; }
+  function isDesktop() { return desktopMQ.matches; }
+  function isReduced() { return reducedMQ.matches; }
+  function onMediaChange(mq, fn) {
+    if (mq.addEventListener) mq.addEventListener('change', fn);
+    else if (mq.addListener) mq.addListener(fn);
+  }
+
+  /* 1) Layout: scale the 1685 x 1073 artboard to the window on desktop,
+        scale the feature cards to their column on tablets. */
+  function layout() {
+    if (isDesktop()) {
+      var w = root.clientWidth || window.innerWidth;
+      var h = window.visualViewport ? window.visualViewport.height : window.innerHeight;
+      var scale = Math.min(w / DESIGN_WIDTH, h / DESIGN_HEIGHT);
+      stage.style.setProperty('--scale', String(scale));
+      stage.style.setProperty('--layout-width', (w / scale) + 'px');
+      stage.style.setProperty('--layout-height', (h / scale) + 'px');
+      releaseFeatureCards();
+    } else {
+      stage.style.removeProperty('--scale');
+      stage.style.removeProperty('--layout-width');
+      stage.style.removeProperty('--layout-height');
+      if (compactMQ.matches) scaleFeatureCards();
+      else releaseFeatureCards();
+    }
+  }
+
+  function scaleFeatureCards() {
+    cardSlots.forEach(function (slot) {
+      var card = slot.querySelector('.lcard');
+      if (!card || !card.offsetWidth) return;
+      var scale = slot.clientWidth / card.offsetWidth;
+      var crop = parseFloat(getComputedStyle(card).getPropertyValue('--crop-top')) || 0;
+      card.style.setProperty('--card-scale', String(scale));
+      card.style.setProperty('--crop-shift', (-crop * scale) + 'px');
+      slot.style.height = ((card.offsetHeight - crop) * scale) + 'px';
+    });
+  }
+
+  function releaseFeatureCards() {
+    cardSlots.forEach(function (slot) {
+      var card = slot.querySelector('.lcard');
+      if (card) {
+        card.style.removeProperty('--card-scale');
+        card.style.removeProperty('--crop-shift');
+      }
+      slot.style.removeProperty('height');
+    });
+  }
+
+  var layoutQueued = false;
+  function queueLayout() {
+    if (layoutQueued) return;
+    layoutQueued = true;
+    window.requestAnimationFrame(function () {
+      layoutQueued = false;
+      layout();
+    });
+  }
+
+  /* 2) Section transition (desktop only) */
+  function transitionsEnabled() {
+    return isDesktop() && !isReduced() && slots.length === 2;
+  }
+
+  function easeInExpo(t) { return t <= 0 ? 0 : Math.pow(2, EXIT_EXP * (t - 1)); }
+
+  function cubicBezier(x1, y1, x2, y2) {
+    var cx = 3 * x1, bx = 3 * (x2 - x1) - cx, ax = 1 - cx - bx;
+    var cy = 3 * y1, by = 3 * (y2 - y1) - cy, ay = 1 - cy - by;
+    function sampleX(t) { return ((ax * t + bx) * t + cx) * t; }
+    function sampleY(t) { return ((ay * t + by) * t + cy) * t; }
+    function slopeX(t) { return (3 * ax * t + 2 * bx) * t + cx; }
+    return function (x) {
+      if (x <= 0) return 0;
+      if (x >= 1) return 1;
+      var t = x;
+      for (var i = 0; i < 8; i++) {
+        var err = sampleX(t) - x;
+        var d = slopeX(t);
+        if (Math.abs(err) < 1e-7 || Math.abs(d) < 1e-7) break;
+        t = clamp01(t - err / d);
+      }
+      return sampleY(t);
+    };
+  }
+  var pillEase = cubicBezier(0.42, 0.09, 0, 1);
+
+  function reveal(ms, start, dur) {
+    return 1 - Math.pow(1 - clamp01((ms - start) / dur), 2.2);
+  }
+
+  var FEATURE_STEPS = [
+    ['--title-opacity', TITLE_AT, TITLE_MS],
+    ['--security-base', 1060, 420],
+    ['--security-art', 1480, 420],
+    ['--transfer-base', 1390, 430],
+    ['--transfer-art', 1880, 470],
+    ['--operators-base', 1900, 440],
+    ['--operators-rings', 2220, 430],
+    ['--operators-card', 2580, 430],
+    ['--operators-badge', 2920, 340],
+    ['--operators-tag', 3140, 260]
+  ];
+  var HERO_PROPS = ['--scene-opacity', '--scene-y', '--scene-scale'];
+  var FEATURE_PROPS = FEATURE_STEPS.map(function (s) { return s[0]; })
+    .concat(['--feature-scene-opacity', '--feature-scene-y', '--feature-scene-scale']);
+
+  var running = false;
+  var rafId = 0;
+  var travel = 0;
+
+  function currentScale() {
+    return parseFloat(stage.style.getPropertyValue('--scale')) || 1;
+  }
+
+  function pillTravel() {
+    return featurePanel.getBoundingClientRect().width / currentScale() / 2 - PILL_HALF - HERO_PILL_X;
+  }
+
+  function paintHeroTransition(ms) {
+    var u = clamp01(ms / EXIT_MS);
+    heroPanel.style.setProperty('--scene-opacity', String(1 - u));
+    heroPanel.style.setProperty('--scene-y', (EXIT_TRAVEL * easeInExpo(u)) + 'px');
+    heroPanel.style.setProperty('--scene-scale', String(1 - EXIT_SCALE * Math.pow(u, EXIT_SCALE_EXP)));
+    heroNav.style.setProperty('--pill-x', (travel * pillEase(clamp01((ms - PILL_DELAY) / PILL_MS))) + 'px');
+  }
+
+  function paintFeatureEntrance(ms) {
+    FEATURE_STEPS.forEach(function (s) {
+      featurePanel.style.setProperty(s[0], String(reveal(ms, s[1], s[2])));
+    });
+  }
+
+  function paintFeatureSceneExit(u) {
+    featurePanel.style.setProperty('--feature-scene-opacity', String(1 - u));
+    featurePanel.style.setProperty('--feature-scene-y', (-EXIT_TRAVEL * easeInExpo(u)) + 'px');
+    featurePanel.style.setProperty('--feature-scene-scale', String(1 - EXIT_SCALE * Math.pow(u, EXIT_SCALE_EXP)));
+  }
+
+  function clearPaint() {
+    if (rafId) window.cancelAnimationFrame(rafId);
+    rafId = 0;
+    running = false;
+    HERO_PROPS.forEach(function (p) { heroPanel.style.removeProperty(p); });
+    heroNav.style.removeProperty('--pill-x');
+    FEATURE_PROPS.forEach(function (p) { featurePanel.style.removeProperty(p); });
+    body.classList.remove('is-transitioning');
+  }
+
+  function jumpTo(index) {
+    var slot = slots[index];
+    if (!slot) return;
+    var previous = root.style.scrollBehavior;
+    root.style.scrollBehavior = 'auto';
+    window.scrollTo(0, slot.offsetTop);
+    root.style.scrollBehavior = previous;
+  }
+
+  function activeSlot() {
+    var mid = window.innerHeight / 2;
+    for (var i = 0; i < slots.length; i++) {
+      var r = slots[i].getBoundingClientRect();
+      if (r.top <= mid && r.bottom > mid) return i;
+    }
+    return -1;
+  }
+
+  function slotIndexOf(el) {
+    for (var i = 0; i < slots.length; i++) {
+      if (slots[i].contains(el)) return i;
+    }
+    return -1;
+  }
+
+  function focusTarget(el) {
+    if (!el) return;
+    try { el.focus({ preventScroll: true }); } catch (e) { /* older browsers */ }
+  }
+
+  function play(forward, focusEl) {
+    if (running) return;
+    running = true;
+    closeMenus(false);
+    body.classList.add('is-transitioning');
+    travel = pillTravel();
+    var duration = forward ? TOTAL_MS : BACK_MS;
+    var start = null;
+    var jumped = false;
+    var globeStarted = false;
+
+    if (forward) {
+      resetGlobe();
+      paintHeroTransition(0);
+      paintFeatureEntrance(0);
+    } else {
+      paintFeatureSceneExit(0);
+    }
+
+    function frame(now) {
+      if (start === null) start = now;
+      var ms = now - start;
+      if (forward) {
+        if (ms >= EXIT_MS && !jumped) { jumpTo(1); jumped = true; }
+        paintHeroTransition(ms);
+        paintFeatureEntrance(ms);
+        if (ms >= GLOBE_AT && !globeStarted) { startGlobe(); globeStarted = true; }
+      } else if (ms < EXIT_MS) {
+        paintHeroTransition(EXIT_MS);
+        paintFeatureSceneExit(ms / EXIT_MS);
+      } else {
+        if (!jumped) { paintFeatureSceneExit(1); jumpTo(0); jumped = true; }
+        paintHeroTransition(EXIT_MS - (ms - EXIT_MS));
+      }
+      if (ms < duration) {
+        rafId = window.requestAnimationFrame(frame);
+      } else {
+        if (!jumped) jumpTo(forward ? 1 : 0);
+        clearPaint();
+        if (forward) startGlobe(); else resetGlobe();
+        focusTarget(focusEl);
+      }
+    }
+    rafId = window.requestAnimationFrame(frame);
+  }
+
+  function trigger(dir, focusEl) {
+    var active = activeSlot();
+    if (dir > 0 && active === 0) { play(true, focusEl); return true; }
+    if (dir < 0 && active === 1) { play(false, focusEl); return true; }
+    return false;
+  }
+
+  window.addEventListener('wheel', function (e) {
+    // Ctrl or Cmd with the wheel (and a trackpad pinch) is a zoom: leave it to the browser
+    if (e.ctrlKey || e.metaKey) return;
+    if (!transitionsEnabled()) return;
+    if (running) { e.preventDefault(); return; }
+    if (Math.abs(e.deltaY) < 2) return;
+    if (trigger(e.deltaY > 0 ? 1 : -1, null)) e.preventDefault();
+  }, { passive: false });
+
+  var touchY = null;
+  var touchUsed = false;
+  window.addEventListener('touchstart', function (e) {
+    if (!transitionsEnabled() || !e.touches.length) return;
+    // Two fingers is a pinch-zoom, not a swipe
+    if (e.touches.length > 1) { touchY = null; return; }
+    touchY = e.touches[0].clientY;
+    touchUsed = false;
+  }, { passive: true });
+  window.addEventListener('touchmove', function (e) {
+    if (!transitionsEnabled() || e.touches.length > 1) return;
+    if (running) { e.preventDefault(); return; }
+    if (touchY === null || touchUsed || !e.touches.length) return;
+    var dy = touchY - e.touches[0].clientY;
+    if (Math.abs(dy) < 12) return;
+    touchUsed = true;
+    if (trigger(dy > 0 ? 1 : -1, null)) e.preventDefault();
+  }, { passive: false });
+  window.addEventListener('touchend', function () { touchY = null; }, { passive: true });
+
+  document.addEventListener('keydown', function (e) {
+    if (!transitionsEnabled() || e.altKey || e.ctrlKey || e.metaKey) return;
+    var key = e.key;
+    var dir = 0;
+    if (key === 'PageDown' || key === 'ArrowDown' || (key === ' ' && !e.shiftKey)) dir = 1;
+    else if (key === 'PageUp' || key === 'ArrowUp' || (key === ' ' && e.shiftKey)) dir = -1;
+    if (!dir) return;
+    if (running) { e.preventDefault(); return; }
+    var t = e.target;
+    if (key === ' ' && t && t.closest && t.closest('button, input, textarea, select, [contenteditable]')) return;
+    if (trigger(dir, null)) e.preventDefault();
+  });
+
+  /* On desktop, a link to the other section plays the transition instead of a jump */
+  document.addEventListener('click', function (e) {
+    if (e.defaultPrevented || e.button !== 0 || e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) return;
+    var link = e.target && e.target.closest ? e.target.closest('a[href^="#"]') : null;
+    if (!link || !isDesktop()) return;
+    var id = link.getAttribute('href').slice(1);
+    var target = id ? document.getElementById(id) : null;
+    if (!target) return;
+    var index = slotIndexOf(target);
+    if (index < 0) return;
+    e.preventDefault();
+    if (running) return;
+    if (activeSlot() === index) { focusTarget(target); return; }
+    if (transitionsEnabled()) {
+      play(index === 1, target);
+    } else {
+      jumpTo(index);
+      syncGlobe();
+      focusTarget(target);
+    }
+  });
+
+  /* 3) The travelling node on the tracking card */
+  function startGlobe() { featureScene.classList.add('has-transfer-loop'); }
+  function resetGlobe() {
+    featureScene.classList.remove('has-transfer-loop');
+    void featureScene.offsetWidth;
+  }
+  function syncGlobe() {
+    if (isReduced()) { resetGlobe(); return; }
+    if (isDesktop()) {
+      var active = activeSlot();
+      var on = featureScene.classList.contains('has-transfer-loop');
+      if (active === 1 && !on) startGlobe();
+      else if (active === 0 && on) resetGlobe();
+    } else {
+      startGlobe();
+    }
+  }
+
+  window.addEventListener('hashchange', function () {
+    clearPaint();
+    var hash = window.location.hash;
+    var target = hash.length > 1 ? document.getElementById(hash.slice(1)) : null;
+    if (isDesktop() && target) {
+      var index = slotIndexOf(target);
+      if (index >= 0) jumpTo(index);
+    }
+    if (hash === '#features' || hash === '#operators') { resetGlobe(); startGlobe(); }
+    else syncGlobe();
+  });
+
+  var scrollQueued = false;
+  window.addEventListener('scroll', function () {
+    if (scrollQueued) return;
+    scrollQueued = true;
+    window.requestAnimationFrame(function () {
+      scrollQueued = false;
+      if (!running && isDesktop()) syncGlobe();
+    });
+  }, { passive: true });
+
+  /* 4) Nav pills */
+  var pills = toArray(document.querySelectorAll('.pill'));
+  pills.forEach(function (pill) {
+    pill.addEventListener('click', function () {
+      var href = pill.getAttribute('href');
+      pills.forEach(function (p) {
+        var on = p.getAttribute('href') === href;
+        p.classList.toggle('is-active', on);
+        if (on) p.setAttribute('aria-current', 'true');
+        else p.removeAttribute('aria-current');
+      });
+    });
+  });
+
+  /* 5) Burger menu (below 1200px) */
+  var burgers = toArray(document.querySelectorAll('.navburger'));
+
+  function menuFor(btn) { return document.getElementById(btn.getAttribute('aria-controls')); }
+
+  function setMenu(btn, open) {
+    var menu = menuFor(btn);
+    if (!menu) return;
+    menu.classList.toggle('is-open', open);
+    btn.setAttribute('aria-expanded', open ? 'true' : 'false');
+    btn.setAttribute('aria-label', open ? 'Close menu' : 'Open menu');
+  }
+
+  function closeMenus(restoreFocus) {
+    burgers.forEach(function (btn) {
+      if (btn.getAttribute('aria-expanded') === 'true') {
+        setMenu(btn, false);
+        if (restoreFocus) btn.focus();
+      }
+    });
+  }
+
+  burgers.forEach(function (btn) {
+    btn.addEventListener('click', function () {
+      var open = btn.getAttribute('aria-expanded') !== 'true';
+      closeMenus(false);
+      if (open) {
+        setMenu(btn, true);
+        window.requestAnimationFrame(function () {
+          var first = menuFor(btn).querySelector('a');
+          if (first) first.focus();
+        });
+      }
+    });
+    var menu = menuFor(btn);
+    if (menu) {
+      toArray(menu.querySelectorAll('a')).forEach(function (a) {
+        a.addEventListener('click', function () { closeMenus(false); });
+      });
+    }
+  });
+
+  document.addEventListener('click', function (e) {
+    burgers.forEach(function (btn) {
+      if (btn.getAttribute('aria-expanded') !== 'true') return;
+      var menu = menuFor(btn);
+      if (btn.contains(e.target) || (menu && menu.contains(e.target))) return;
+      setMenu(btn, false);
+    });
+  });
+
+  document.addEventListener('keydown', function (e) {
+    if (e.key === 'Escape' || e.key === 'Esc') closeMenus(true);
+  });
+
+  /* 6) Dots and the three phone screens */
+  var showcase = document.getElementById('tracking');
+  var dots = toArray(showcase.querySelectorAll('.dot'));
+  var shots = toArray(showcase.querySelectorAll('.phone__shot'));
+  var texts = toArray(showcase.querySelectorAll('.showcase__slide'));
+  var current = 0;
+  var slideTimer = 0;
+  var hovering = false;
+  var focusInside = false;
+  var autoStopped = false; // once a visitor picks a screen, the slides stop moving on their own
+
+  function showSlide(index) {
+    current = index;
+    dots.forEach(function (dot, i) {
+      var on = i === index;
+      dot.classList.toggle('is-active', on);
+      dot.setAttribute('aria-pressed', on ? 'true' : 'false');
+    });
+    shots.forEach(function (shot, i) { shot.classList.toggle('is-active', i === index); });
+    texts.forEach(function (text, i) { text.classList.toggle('is-active', i === index); });
+  }
+
+  function scheduleSlides() {
+    window.clearTimeout(slideTimer);
+    slideTimer = 0;
+    if (autoStopped || isReduced() || hovering || focusInside || document.hidden) return;
+    slideTimer = window.setTimeout(function () {
+      showSlide((current + 1) % dots.length);
+      scheduleSlides();
+    }, SLIDE_MS);
+  }
+
+  dots.forEach(function (dot, i) {
+    dot.addEventListener('click', function () {
+      showSlide(i);
+      autoStopped = true;
+      scheduleSlides();
+    });
+  });
+
+  showcase.addEventListener('pointerover', function (e) {
+    if (e.pointerType === 'touch') return;
+    var over = !!(e.target.closest && e.target.closest('.showcase__card, .showcase__title, .showcase__sub, .dots'));
+    if (over !== hovering) { hovering = over; scheduleSlides(); }
+  });
+  showcase.addEventListener('pointerleave', function () {
+    if (hovering) { hovering = false; scheduleSlides(); }
+  });
+  showcase.addEventListener('focusin', function (e) {
+    focusInside = e.target !== showcase;
+    scheduleSlides();
+  });
+  showcase.addEventListener('focusout', function (e) {
+    var next = e.relatedTarget;
+    focusInside = !!(next && next !== showcase && showcase.contains(next));
+    scheduleSlides();
+  });
+  document.addEventListener('visibilitychange', scheduleSlides);
+
+  /* Re-sync when the window crosses 1200px or the motion setting changes */
+  onMediaChange(desktopMQ, function () {
+    clearPaint();
+    closeMenus(false);
+    layout();
+    syncGlobe();
+  });
+  onMediaChange(compactMQ, queueLayout);
+  onMediaChange(reducedMQ, function () {
+    clearPaint();
+    syncGlobe();
+    scheduleSlides();
+  });
+
+  window.addEventListener('resize', queueLayout);
+  window.addEventListener('orientationchange', queueLayout);
+  if (window.visualViewport) window.visualViewport.addEventListener('resize', queueLayout);
+
+  function openAtHash() {
+    var hash = window.location.hash;
+    var target = hash.length > 1 ? document.getElementById(hash.slice(1)) : null;
+    if (isDesktop() && target) {
+      var index = slotIndexOf(target);
+      if (index >= 0) jumpTo(index);
+    }
+    syncGlobe();
+  }
+
+  window.addEventListener('load', function () {
+    layout();
+    openAtHash();
+  });
+
+  layout();
+  openAtHash();
+  scheduleSlides();
+})();
+</script>
+</body>
+</html>
